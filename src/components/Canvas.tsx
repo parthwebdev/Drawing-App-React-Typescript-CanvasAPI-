@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useCanvasContext } from "../context/CanvasContext";
-import Controls from "./Controls";
 
 interface CanvasProps {
   width: number;
@@ -8,10 +7,14 @@ interface CanvasProps {
 }
 
 function Canvas({ width, height }: CanvasProps) {
-  // const [currentLine, setCurrentLine] = useState<Point[]>([]);
-  // const [history, setHistory] = useState<Line[]>([]);
-  const { currentLine, setCurrentLine, history, setHistory } =
-    useCanvasContext();
+  const {
+    currentLine,
+    setCurrentLine,
+    history,
+    setHistory,
+    width: lineWidth,
+    color,
+  } = useCanvasContext();
 
   const [isHolding, setIsHolding] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,13 +26,15 @@ function Canvas({ width, height }: CanvasProps) {
     if (ctx) {
       ctx.clearRect(0, 0, width, height);
       ctx.beginPath();
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 2;
+      // ctx.strokeStyle = color;
+      // ctx.lineWidth = lineWidth;
       ctx.lineCap = "round";
 
       history.forEach((line) => {
         ctx.beginPath();
         ctx.moveTo(line.points[0].x, line.points[0].y);
+        ctx.strokeStyle = line.color;
+        ctx.lineWidth = line.width;
         line.points.forEach((point) => {
           ctx.lineTo(point.x, point.y);
         });
@@ -38,13 +43,15 @@ function Canvas({ width, height }: CanvasProps) {
 
       if (isHolding) {
         ctx.moveTo(currentLine[0].x, currentLine[0].y);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
         currentLine.forEach((line) => {
           ctx.lineTo(line.x, line.y);
         });
         ctx.stroke();
       }
     }
-  }, [currentLine, isHolding, history, width, height]);
+  }, [currentLine, isHolding, history, width, height, color, lineWidth]);
 
   function getCanvasCoordinates(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = e.currentTarget;
@@ -79,13 +86,15 @@ function Canvas({ width, height }: CanvasProps) {
     setIsHolding(false);
     ctx?.closePath();
 
-    setHistory((prevHistory) => [...prevHistory, { points: currentLine }]);
+    setHistory((prevHistory) => [
+      ...prevHistory,
+      { points: currentLine, color, width: lineWidth },
+    ]);
     setCurrentLine([]);
   }
 
   return (
     <>
-      <Controls />
       <canvas
         ref={canvasRef}
         width={width}

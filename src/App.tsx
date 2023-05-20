@@ -1,6 +1,8 @@
 import Canvas from "./components/Canvas";
 import { useEffect, useState } from "react";
 import { CanvasContextProvider } from "./context/CanvasContext";
+import Customize from "./components/Customize";
+import Controls from "./components/Controls";
 
 // currentLine => [{x, y}, {x, y}, {x, y}]
 // lines => [ {points: [{x, y}, {x, y}, {x, y}], color},{points: [], color}, {points: [], color} ]
@@ -25,6 +27,8 @@ function App() {
   return (
     <CanvasContextProvider>
       <div className="w-screen h-screen">
+        <Customize />
+        <Controls />
         <Canvas width={width} height={height} />
       </div>
     </CanvasContextProvider>

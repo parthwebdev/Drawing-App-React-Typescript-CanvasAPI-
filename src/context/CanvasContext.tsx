@@ -7,7 +7,8 @@ interface Point {
 
 export interface Line {
   points: Point[];
-  // color: string;
+  color: string;
+  width: number;
 }
 
 interface CanvasContextType {
@@ -15,6 +16,10 @@ interface CanvasContextType {
   history: Line[];
   setCurrentLine: React.Dispatch<React.SetStateAction<Point[]>>;
   setHistory: React.Dispatch<React.SetStateAction<Line[]>>;
+  color: string;
+  width: number;
+  setWidth: React.Dispatch<React.SetStateAction<number>>;
+  setColor: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const CanvasContext = createContext<CanvasContextType | null>(null);
@@ -37,10 +42,21 @@ export const CanvasContextProvider = ({
 }) => {
   const [currentLine, setCurrentLine] = useState<Point[]>([]);
   const [history, setHistory] = useState<Line[]>([]);
+  const [color, setColor] = useState<string>("#ffffff");
+  const [width, setWidth] = useState<number>(1);
 
   return (
     <CanvasContext.Provider
-      value={{ currentLine, history, setCurrentLine, setHistory }}
+      value={{
+        currentLine,
+        history,
+        setCurrentLine,
+        setHistory,
+        color,
+        width,
+        setWidth,
+        setColor,
+      }}
     >
       {children}
     </CanvasContext.Provider>
