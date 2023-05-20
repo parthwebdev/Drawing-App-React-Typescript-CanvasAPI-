@@ -5,7 +5,7 @@ interface Point {
   y: number;
 }
 
-interface Line {
+export interface Line {
   points: Point[];
   // color: string;
 }
