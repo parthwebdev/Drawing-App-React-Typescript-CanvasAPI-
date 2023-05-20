@@ -1,27 +1,50 @@
 import { useEffect, useRef, useState } from "react";
+import { useCanvasContext } from "../context/CanvasContext";
+import Controls from "./Controls";
 
 interface CanvasProps {
   width: number;
   height: number;
 }
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Line {
-  points: Point[];
-  // color: string;
-}
-
 function Canvas({ width, height }: CanvasProps) {
-  const [currentLine, setCurrentLine] = useState<Point[]>([]);
-  const [history, sethistory] = useState<Line[]>([]);
+  // const [currentLine, setCurrentLine] = useState<Point[]>([]);
+  // const [history, setHistory] = useState<Line[]>([]);
+  const { currentLine, setCurrentLine, history, setHistory } =
+    useCanvasContext();
+
   const [isHolding, setIsHolding] = useState<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {}, [history, width, height]);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+
+    if (ctx) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.beginPath();
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+
+      history.forEach((line) => {
+        ctx.beginPath();
+        ctx.moveTo(line.points[0].x, line.points[0].y);
+        line.points.forEach((point) => {
+          ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+      });
+
+      if (isHolding) {
+        ctx.moveTo(currentLine[0].x, currentLine[0].y);
+        currentLine.forEach((line) => {
+          ctx.lineTo(line.x, line.y);
+        });
+        ctx.stroke();
+      }
+    }
+  }, [currentLine, isHolding, history, width, height]);
 
   function getCanvasCoordinates(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = e.currentTarget;
@@ -38,27 +61,14 @@ function Canvas({ width, height }: CanvasProps) {
 
   function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
     setIsHolding(true);
-    const { x, y, ctx } = getCanvasCoordinates(e);
-
-    if (ctx) {
-      ctx.beginPath();
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 5;
-      ctx.lineCap = "round";
-    }
+    const { x, y } = getCanvasCoordinates(e);
 
     setCurrentLine([{ x, y }]);
   }
 
-  function drawLine(e: React.MouseEvent<HTMLCanvasElement>) {
+  function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     if (isHolding) {
-      const { x, y, ctx } = getCanvasCoordinates(e);
-
-      if (ctx) {
-        ctx.moveTo(x, y);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      }
+      const { x, y } = getCanvasCoordinates(e);
       setCurrentLine((prevPoints) => [...prevPoints, { x, y }]);
     }
   }
@@ -69,22 +79,25 @@ function Canvas({ width, height }: CanvasProps) {
     setIsHolding(false);
     ctx?.closePath();
 
-    sethistory((prevHistory) => [...prevHistory, { points: currentLine }]);
+    setHistory((prevHistory) => [...prevHistory, { points: currentLine }]);
     setCurrentLine([]);
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      style={{
-        border: "1px solid white",
-      }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={drawLine}
-      onMouseUp={handleMouseUp}
-    ></canvas>
+    <>
+      <Controls />
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        style={{
+          border: "1px solid white",
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      ></canvas>
+    </>
   );
 }
 

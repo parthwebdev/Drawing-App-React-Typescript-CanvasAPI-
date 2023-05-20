@@ -1,5 +1,10 @@
 function Controls() {
-  return <div>Controls</div>;
+  return (
+    <div>
+      <button>Undo</button>
+      <button>Redo</button>
+    </div>
+  );
 }
 
 export default Controls;

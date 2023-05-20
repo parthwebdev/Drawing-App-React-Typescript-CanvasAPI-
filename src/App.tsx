@@ -1,5 +1,6 @@
 import Canvas from "./components/Canvas";
 import { useEffect, useState } from "react";
+import { CanvasContextProvider } from "./context/CanvasContext";
 
 // currentLine => [{x, y}, {x, y}, {x, y}]
 // lines => [ {points: [{x, y}, {x, y}, {x, y}], color},{points: [], color}, {points: [], color} ]
@@ -22,13 +23,11 @@ function App() {
   }, []);
 
   return (
-    <div className="w-screen h-screen">
-      <div className="button-container">
-        <button>Undo</button>
-        <button>Redo</button>
+    <CanvasContextProvider>
+      <div className="w-screen h-screen">
+        <Canvas width={width} height={height} />
       </div>
-      <Canvas width={width} height={height} />
-    </div>
+    </CanvasContextProvider>
   );
 }
 
