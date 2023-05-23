@@ -26,9 +26,17 @@ function Canvas({ width, height }: CanvasProps) {
     if (ctx) {
       ctx.clearRect(0, 0, width, height);
       ctx.beginPath();
-      // ctx.strokeStyle = color;
-      // ctx.lineWidth = lineWidth;
       ctx.lineCap = "round";
+
+      if (isHolding) {
+        ctx.moveTo(currentLine[0].x, currentLine[0].y);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+        currentLine.forEach((line) => {
+          ctx.lineTo(line.x, line.y);
+        });
+        ctx.stroke();
+      }
 
       history.forEach((line) => {
         ctx.beginPath();
@@ -40,48 +48,27 @@ function Canvas({ width, height }: CanvasProps) {
         });
         ctx.stroke();
       });
-
-      if (isHolding) {
-        ctx.moveTo(currentLine[0].x, currentLine[0].y);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-        currentLine.forEach((line) => {
-          ctx.lineTo(line.x, line.y);
-        });
-        ctx.stroke();
-      }
     }
   }, [currentLine, isHolding, history, width, height, color, lineWidth]);
 
-  function getCanvasCoordinates(e: React.MouseEvent<HTMLCanvasElement>) {
-    const canvas = e.currentTarget;
-    const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      canvas,
-      ctx,
-    };
-  }
-
   function handleMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
-    setIsHolding(true);
-    const { x, y } = getCanvasCoordinates(e);
+    const { offsetX: x, offsetY: y } = e.nativeEvent;
 
+    setIsHolding(true);
     setCurrentLine([{ x, y }]);
   }
 
   function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     if (isHolding) {
-      const { x, y } = getCanvasCoordinates(e);
+      const { offsetX: x, offsetY: y } = e.nativeEvent;
+
       setCurrentLine((prevPoints) => [...prevPoints, { x, y }]);
     }
   }
 
   function handleMouseUp(e: React.MouseEvent<HTMLCanvasElement>) {
-    const { ctx } = getCanvasCoordinates(e);
+    const canvas = e.currentTarget;
+    const ctx = canvas.getContext("2d");
 
     setIsHolding(false);
     ctx?.closePath();

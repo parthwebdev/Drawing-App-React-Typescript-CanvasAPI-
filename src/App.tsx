@@ -4,17 +4,14 @@ import { CanvasContextProvider } from "./context/CanvasContext";
 import Customize from "./components/Customize";
 import Controls from "./components/Controls";
 
-// currentLine => [{x, y}, {x, y}, {x, y}]
-// lines => [ {points: [{x, y}, {x, y}, {x, y}], color},{points: [], color}, {points: [], color} ]
-
 function App() {
-  const [width, setWidth] = useState(window.innerWidth - 100);
-  const [height, setHeight] = useState(window.innerHeight - 100);
+  const [width, setWidth] = useState(window.innerWidth - 20);
+  const [height, setHeight] = useState(window.innerHeight - 20);
 
   useEffect(() => {
     const handleResize = () => {
-      setWidth(window.innerWidth - 100);
-      setHeight(window.innerHeight - 100);
+      setWidth(window.innerWidth - 20);
+      setHeight(window.innerHeight - 20);
     };
 
     window.addEventListener("resize", handleResize);
