@@ -1,4 +1,5 @@
 import { useCanvasContext } from "../context/CanvasContext";
+import ColorIcon from "../assets/brush";
 
 function Customize() {
   const { color, width, setColor, setWidth } = useCanvasContext();
@@ -14,8 +15,19 @@ function Customize() {
   }
 
   return (
-    <>
-      <input type="color" value={color} onChange={(e) => onColorChange(e)} />
+    <div className="flex items-center gap-4">
+      <div className="relative">
+        <input
+          type="color"
+          className="w-0 h-0 absolute overflow-hidden"
+          id="color-picker"
+          value={color}
+          onChange={(e) => onColorChange(e)}
+        />
+        <label htmlFor="color-picker">
+          <ColorIcon width={30} height={30} color={color} />
+        </label>
+      </div>
       <input
         type="range"
         name="width"
@@ -24,7 +36,7 @@ function Customize() {
         max={20}
         onChange={(e) => onWidthChange(e)}
       />
-    </>
+    </div>
   );
 }
 

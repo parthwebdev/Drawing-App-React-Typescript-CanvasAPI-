@@ -31,7 +31,7 @@ function Controls() {
   }
 
   return (
-    <div>
+    <div className="flex items-center gap-4">
       <button onClick={undo} disabled={history.length === 0}>
         Undo
       </button>
